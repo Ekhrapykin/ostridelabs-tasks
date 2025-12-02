@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import type { Todo } from '../types/Todo';
 import TodoForm from './TodoForm';
-import { Card, CardContent, Typography, Button, Box } from '@mui/material';
+import { Card, CardContent, Typography, Button, Box, Dialog, DialogTitle, DialogContent } from '@mui/material';
 
 interface TodoItemProps {
   todo: Todo;
@@ -19,21 +19,6 @@ function TodoItem({ todo, onDelete, onEdit }: TodoItemProps) {
     },
     [onEdit, todo.id]
   );
-
-  if (isEditing) {
-    return (
-      <Card sx={{ mb: 1 }}>
-        <CardContent>
-          <TodoForm
-            onSubmit={handleEdit}
-            initialData={todo}
-            onCancel={() => setIsEditing(false)}
-            isEditing={true}
-          />
-        </CardContent>
-      </Card>
-    );
-  }
 
   return (
     <Card sx={{ mb: 1 }}>
@@ -67,6 +52,17 @@ function TodoItem({ todo, onDelete, onEdit }: TodoItemProps) {
           Delete
         </Button>
       </Box>
+      <Dialog open={isEditing} onClose={() => setIsEditing(false)}>
+        <DialogTitle>Edit Todo</DialogTitle>
+        <DialogContent>
+          <TodoForm
+            onSubmit={handleEdit}
+            initialData={todo}
+            onCancel={() => setIsEditing(false)}
+            isEditing={true}
+          />
+        </DialogContent>
+      </Dialog>
     </Card>
   );
 }

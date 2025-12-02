@@ -37,7 +37,7 @@ function TodoForm({ onSubmit, initialData, onCancel, isEditing = false }: TodoFo
   }, [title, description, onSubmit]);
 
   return (
-    <Box component="form" onSubmit={handleSubmit} sx={{ p: 2, border: 1, borderColor: 'grey.300', borderRadius: 1, mb: 2 }}>
+    <Box component="form" onSubmit={handleSubmit} sx={{ p: 2, borderRadius: 1 }}>
       <TextField
         label="Title"
         variant="outlined"
@@ -57,16 +57,12 @@ function TodoForm({ onSubmit, initialData, onCancel, isEditing = false }: TodoFo
         fullWidth
         sx={{ mb: 2 }}
       />
-      <Box display="flex" gap={1}>
-        <Button type="submit" variant="contained" color="primary">
-          {isEditing ? 'Update' : 'Add'} Todo
-        </Button>
-        {isEditing && onCancel && (
-          <Button type="button" onClick={onCancel} variant="outlined" color="secondary">
-            Cancel
-          </Button>
-        )}
-      </Box>
+      <Button type="submit" variant="contained" color="primary" sx={{ mr: 1 }}>
+        {isEditing ? 'Update' : 'Add'} Todo
+      </Button>
+      <Button type="button" onClick={onCancel} variant="outlined" color="secondary">
+        Cancel
+      </Button>
     </Box>
   );
 }
