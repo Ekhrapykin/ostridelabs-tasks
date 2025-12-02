@@ -1,0 +1,14 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "Backend service for OstrideLabs Tasks",
+  "main": "index.js",
+  "scripts": {
+    "dev": "echo 'Backend dev server not implemented yet'",
+    "build": "echo 'Backend build not implemented yet'"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
+
