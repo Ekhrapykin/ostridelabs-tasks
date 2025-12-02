@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { todosApi } from '../api/todos';
+import { controller } from '../api/controller.ts';
 
 export const TODOS_QUERY_KEY = ['todos'];
 const invalidateTodosQuery = (queryClient: ReturnType<typeof useQueryClient>) => () =>
@@ -8,14 +8,14 @@ const invalidateTodosQuery = (queryClient: ReturnType<typeof useQueryClient>) =>
 export const useTodos = () =>
   useQuery({
     queryKey: TODOS_QUERY_KEY,
-    queryFn: todosApi.get,
+    queryFn: controller.get,
   });
 
 export const useCreateTodo = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: todosApi.post,
+    mutationFn: controller.post,
     onSuccess: invalidateTodosQuery(queryClient)
   });
 };
@@ -24,7 +24,7 @@ export const useUpdateTodo = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: todosApi.put,
+    mutationFn: controller.put,
     onSuccess: invalidateTodosQuery(queryClient),
   });
 };
@@ -33,7 +33,7 @@ export const useToggleTodoCompleted = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: todosApi.toggleCompleted,
+    mutationFn: controller.toggleCompleted,
     onSuccess: invalidateTodosQuery(queryClient)
   });
 };
@@ -42,7 +42,7 @@ export const useDeleteTodo = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: todosApi.delete,
+    mutationFn: controller.delete,
     onSuccess: invalidateTodosQuery(queryClient)
   });
 };
