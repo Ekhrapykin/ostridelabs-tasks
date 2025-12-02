@@ -1,40 +1,90 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import TodoForm from './components/TodoForm';
 import TodoList from './components/TodoList';
 import type { Todo } from './types/Todo';
 import { v4 as uuidv4 } from 'uuid';
 import _ from 'lodash';
-import { Container, Typography, Button, Dialog, DialogTitle, DialogContent } from '@mui/material';
+import { Container, Typography, Button, Dialog, DialogTitle, DialogContent, CircularProgress, Alert } from '@mui/material';
 import { arrayMove } from '@dnd-kit/sortable';
+import { useTodos, useCreateTodo, useUpdateTodo, useDeleteTodo } from './hooks/useTodosQuery';
 
 function App() {
-  const [todos, setTodos] = useState<Todo[]>([]);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [localTodos, setLocalTodos] = useState<Todo[]>([]);
+  const hasInitialized = useRef(false);
+
+  // React Query hooks
+  const { data: serverTodos, isLoading, error } = useTodos();
+  const createTodoMutation = useCreateTodo();
+  const updateTodoMutation = useUpdateTodo();
+  const deleteTodoMutation = useDeleteTodo();
+
+  useEffect(() => {
+    if (serverTodos && !hasInitialized.current) {
+      hasInitialized.current = true;
+      setLocalTodos(serverTodos);
+    }
+  }, [serverTodos]);
+
+  const todos = useMemo(() => {
+    return localTodos.length > 0 ? localTodos : serverTodos || [];
+  }, [serverTodos, localTodos]);
 
   const addTodo = useCallback((newTodo: Omit<Todo, 'id'>) => {
     const todo: Todo = {
       ...newTodo,
       id: uuidv4(),
     };
-    setTodos(_.concat([todo], todos));
-    setDialogOpen(false);
-  }, [todos]);
+    createTodoMutation.mutate(todo, {
+      onSuccess: () => {
+        setDialogOpen(false);
+        hasInitialized.current = false;
+      },
+    });
+  }, [createTodoMutation]);
 
   const deleteTodo = useCallback((id: string) => {
-    setTodos(_.filter(todos, (todo) => todo.id !== id));
-  }, [todos]);
+    deleteTodoMutation.mutate(id, {
+      onSuccess: () => {
+        hasInitialized.current = false;
+      },
+    });
+  }, [deleteTodoMutation]);
 
   const editTodo = useCallback((updatedTodo: Todo) => {
-    setTodos(_.map(todos, (todo) => (todo.id === updatedTodo.id ? updatedTodo : todo)));
-  }, [todos]);
+    updateTodoMutation.mutate(updatedTodo, {
+      onSuccess: () => {
+        hasInitialized.current = false;
+      },
+    });
+  }, [updateTodoMutation]);
 
   const reorderTodo = useCallback((activeId: string, overId: string) => {
-    setTodos((todos) => {
-      const oldIndex = _.findIndex(todos, (todo) => todo.id === activeId);
-      const newIndex = _.findIndex(todos, (todo) => todo.id === overId);
-      return arrayMove(todos, oldIndex, newIndex);
+    setLocalTodos((currentTodos) => {
+      const todosToReorder = currentTodos.length > 0 ? currentTodos : (serverTodos || []);
+      const oldIndex = _.findIndex(todosToReorder, (todo) => todo.id === activeId);
+      const newIndex = _.findIndex(todosToReorder, (todo) => todo.id === overId);
+      return arrayMove(todosToReorder, oldIndex, newIndex);
     });
-  }, []);
+  }, [serverTodos]);
+
+  if (isLoading) {
+    return (
+      <Container maxWidth="md" sx={{ py: 4, display: 'flex', justifyContent: 'center' }}>
+        <CircularProgress />
+      </Container>
+    );
+  }
+
+  if (error) {
+    return (
+      <Container maxWidth="md" sx={{ py: 4 }}>
+        <Alert severity="error">
+          Error loading todos: {error.message}. Make sure the backend server is running.
+        </Alert>
+      </Container>
+    );
+  }
 
   return (
     <Container maxWidth="md" sx={{ py: 4 }}>

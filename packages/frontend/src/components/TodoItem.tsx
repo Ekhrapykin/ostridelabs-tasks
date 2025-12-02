@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import type { Todo } from '../types/Todo';
 import TodoForm from './TodoForm';
 import { Card, CardContent, Typography, Button, Box, Dialog, DialogTitle, DialogContent } from '@mui/material';
+import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
@@ -30,36 +31,55 @@ function TodoItem({ todo, onDelete, onEdit }: TodoItemProps) {
   };
 
   return (
-    <Card ref={setNodeRef} style={style} sx={{ mb: 1, cursor: 'grab' }} {...attributes} {...listeners}>
-      <CardContent>
-        <Typography variant="h6" component="h3">
-          {todo.title}
-        </Typography>
-        {todo.description && (
-          <Typography variant="body2" color="text.secondary">
-            {todo.description}
-          </Typography>
-        )}
-        <Typography variant="caption" color="text.secondary">
-          ID: {todo.id}
-        </Typography>
-      </CardContent>
-      <Box display="flex" justifyContent="flex-end" p={1}>
-        <Button
-          onClick={() => setIsEditing(true)}
-          variant="outlined"
-          color="primary"
+    <Card ref={setNodeRef} style={style} sx={{ mb: 1 }} {...attributes}>
+      <Box display="flex" alignItems="stretch">
+        <Box
+          {...listeners}
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            cursor: 'grab',
+            px: 1,
+            bgcolor: 'action.hover',
+            '&:active': {
+              cursor: 'grabbing',
+            },
+          }}
         >
-          Edit
-        </Button>
-        <Button
-          onClick={() => onDelete(todo.id)}
-          variant="outlined"
-          color="error"
-          sx={{ ml: 1 }}
-        >
-          Delete
-        </Button>
+          <DragIndicatorIcon />
+        </Box>
+        <Box flex={1}>
+          <CardContent>
+            <Typography variant="h6" component="h3">
+              {todo.title}
+            </Typography>
+            {todo.description && (
+              <Typography variant="body2" color="text.secondary">
+                {todo.description}
+              </Typography>
+            )}
+            <Typography variant="caption" color="text.secondary">
+              ID: {todo.id}
+            </Typography>
+          </CardContent>
+          <Box display="flex" justifyContent="flex-end" p={1}>
+            <Button
+              onClick={() => setIsEditing(true)}
+              variant="outlined"
+              color="primary"
+            >
+              Edit
+            </Button>
+            <Button
+              onClick={() => onDelete(todo.id)}
+              variant="outlined"
+              color="error"
+              sx={{ ml: 1 }}
+            >
+              Delete
+            </Button>
+          </Box>
+        </Box>
       </Box>
       <Dialog open={isEditing} onClose={() => setIsEditing(false)}>
         <DialogTitle>Edit Todo</DialogTitle>
