@@ -8,8 +8,9 @@
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
-    "migrate:up": "knex --knexfile ./knexfile.cjs migrate:latest",
-    "migrate:down": "knex --knexfile ./knexfile.cjs migrate:rollback"
+    "migrate:latest": "knex --knexfile src/knexfile.ts migrate:latest",
+    "migrate:up": "knex --knexfile src/knexfile.ts migrate:up",
+    "migrate:down": "knex --knexfile src/knexfile.ts migrate:rollback"
   },
   "keywords": [],
   "author": "",
