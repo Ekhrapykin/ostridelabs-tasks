@@ -95,5 +95,12 @@ PostgreSQL Database (Docker, port 5432)
 
 Next steps
 -------------------------
-- To add features, start from `packages/frontend/src` (UI/components/hooks) or `packages/backend/src` (routes, db).
-- Suggested improvements: persist drag-and-drop ordering, add authentication, server-side pagination, unit/integration tests, and CI.
+- Persist ordering 
+- Add authentication
+- Unit/integration tests
+- Server-side pagination
+- Optimistic updates for React Query
+- Add tsoa lib support
+- Add OpenAPI spec generation
+- Improve error handling and notifications
+-------------------------
