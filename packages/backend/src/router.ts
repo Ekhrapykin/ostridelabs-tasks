@@ -29,8 +29,8 @@ const router = Router()
   .get('/:id', async (req: Request<{ id: string }>, res: Response<TodoRow | { error: string }>) => {
   try {
     const { id } = req.params;
-    const todo = await knex<TodoRow>('todos')
-      .where('id', id).first();
+    const [todo] = await knex<TodoRow>('todos')
+      .where('id', id);
 
     if (!todo) {
       return res
@@ -56,10 +56,9 @@ const router = Router()
         .json({ error: 'ID and title are required' });
     }
 
-    const created = await knex<TodoRow>('todos')
+    const [created] = await knex<TodoRow>('todos')
       .insert({ id, title, description: description ?? '', completed: completed ?? false })
-      .returning('*')
-      .first();
+      .returning('*');
 
     return res
       .status(200)
@@ -92,11 +91,10 @@ const router = Router()
       updateData.completed = completed;
     }
 
-    const updated = await knex<TodoRow>('todos')
+    const [updated] = await knex<TodoRow>('todos')
       .where('id', id)
       .update(updateData)
-      .returning('*')
-      .first();
+      .returning('*');
 
     if (!updated) {
       return res
@@ -116,19 +114,17 @@ const router = Router()
   try {
     const { id } = req.params;
 
-    const todo = await knex<TodoRow>('todos')
-      .where('id', id)
-      .first();
+    const [todo] = await knex<TodoRow>('todos')
+      .where('id', id);
 
     if (!todo) {
       return res.status(404).json({ error: 'Todo not found' });
     }
 
-    const updated = await knex<TodoRow>('todos')
+    const [updated] = await knex<TodoRow>('todos')
       .where('id', id)
       .update({ completed: !todo.completed, updated_at: knex.fn.now() })
-      .returning('*')
-      .first();
+      .returning('*');
 
     return res.json(updated);
   } catch (error) {
@@ -141,11 +137,10 @@ const router = Router()
   .delete('/:id', async (req: Request<{ id: string }>, res: Response<{ message: string } | { error: string }>) => {
   try {
     const { id } = req.params;
-    const deleted = await knex<TodoRow>('todos')
+    const [deleted] = await knex<TodoRow>('todos')
       .where('id', id)
       .del()
-      .returning('*')
-      .first();
+      .returning('*');
 
     if (!deleted) {
       return res
