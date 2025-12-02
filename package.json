@@ -9,9 +9,9 @@
     "build:frontend": "npm run build --workspace=packages/frontend",
     "dev:backend": "npm run dev --workspace=packages/backend",
     "build:backend": "npm run build --workspace=packages/backend",
-    "db:up": "docker-compose up -d",
-    "db:down": "docker-compose down -v",
-    "db:restart": "docker-compose down -v && docker-compose up -d",
-    "db:logs": "docker-compose logs -f postgres"
+    "db:up": "docker-compose -f packages/backend/docker-compose.yml up -d",
+    "db:down": "docker-compose -f packages/backend/docker-compose.yml  down -v",
+    "db:restart": "npm run db:down && npm run db:up",
+    "db:logs": "docker-compose -f packages/backend/docker-compose.yml logs -f postgres"
   }
 }
