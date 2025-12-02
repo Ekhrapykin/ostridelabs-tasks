@@ -31,10 +31,20 @@ export const todosApi = {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ title: todo.title, description: todo.description }),
+      body: JSON.stringify({ title: todo.title, description: todo.description, completed: todo.completed }),
     });
     if (!response.ok) {
       throw new Error('Failed to update todo');
+    }
+    return response.json();
+  },
+
+  toggleCompleted: async (id: string): Promise<Todo> => {
+    const response = await fetch(`${API_BASE_URL}/${id}/toggle`, {
+      method: 'PATCH',
+    });
+    if (!response.ok) {
+      throw new Error('Failed to toggle todo status');
     }
     return response.json();
   },

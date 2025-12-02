@@ -30,11 +30,15 @@ function TodoForm({ onSubmit, initialData, onCancel, isEditing = false }: TodoFo
   const handleSubmit = useCallback((e: React.FormEvent) => {
     e.preventDefault();
     if (title.trim()) {
-      onSubmit({ title: title.trim(), description: description.trim() });
+      onSubmit({
+        title: title.trim(),
+        description: description.trim(),
+        completed: initialData?.completed ?? false
+      });
       setTitle('');
       setDescription('');
     }
-  }, [title, description, onSubmit]);
+  }, [title, description, onSubmit, initialData?.completed]);
 
   return (
     <Box component="form" onSubmit={handleSubmit} sx={{ p: 2, borderRadius: 1 }}>

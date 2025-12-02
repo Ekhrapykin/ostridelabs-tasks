@@ -29,6 +29,15 @@ export const useUpdateTodo = () => {
   });
 };
 
+export const useToggleTodoCompleted = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: todosApi.toggleCompleted,
+    onSuccess: invalidateTodosQuery(queryClient)
+  });
+};
+
 export const useDeleteTodo = () => {
   const queryClient = useQueryClient();
 

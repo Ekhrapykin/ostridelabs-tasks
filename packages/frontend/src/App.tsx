@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import TodoForm from './components/TodoForm';
 import TodoList from './components/TodoList';
 import type { Todo } from './types/Todo';
@@ -11,7 +11,6 @@ import { useTodos, useCreateTodo, useUpdateTodo, useDeleteTodo } from './hooks/u
 function App() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [localTodos, setLocalTodos] = useState<Todo[]>([]);
-  const hasInitialized = useRef(false);
 
   // React Query hooks
   const { data: serverTodos, isLoading, error } = useTodos();
@@ -20,10 +19,20 @@ function App() {
   const deleteTodoMutation = useDeleteTodo();
 
   useEffect(() => {
-    if (serverTodos && !hasInitialized.current) {
-      hasInitialized.current = true;
-      setLocalTodos(serverTodos);
+    if (!serverTodos) {
+      return;
     }
+
+    setLocalTodos((currentTodos) => {
+      const serverById = new Map(serverTodos.map((todo) => [todo.id, todo]));
+      const orderedTodos = currentTodos
+        .map((todo) => serverById.get(todo.id))
+        .filter((todo): todo is Todo => Boolean(todo));
+      const orderedIds = new Set(orderedTodos.map((todo) => todo.id));
+      const newTodos = serverTodos.filter((todo) => !orderedIds.has(todo.id));
+
+      return [...orderedTodos, ...newTodos];
+    });
   }, [serverTodos]);
 
   const todos = useMemo(() => {
@@ -38,7 +47,6 @@ function App() {
     createTodoMutation.mutate(todo, {
       onSuccess: () => {
         setDialogOpen(false);
-        hasInitialized.current = false;
       },
     });
   }, [createTodoMutation]);
@@ -46,7 +54,6 @@ function App() {
   const deleteTodo = useCallback((id: string) => {
     deleteTodoMutation.mutate(id, {
       onSuccess: () => {
-        hasInitialized.current = false;
       },
     });
   }, [deleteTodoMutation]);
@@ -54,7 +61,6 @@ function App() {
   const editTodo = useCallback((updatedTodo: Todo) => {
     updateTodoMutation.mutate(updatedTodo, {
       onSuccess: () => {
-        hasInitialized.current = false;
       },
     });
   }, [updateTodoMutation]);

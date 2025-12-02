@@ -1,10 +1,11 @@
 import { useState, useCallback } from 'react';
 import type { Todo } from '../types/Todo';
 import TodoForm from './TodoForm';
-import { Card, CardContent, Typography, Button, Box, Dialog, DialogTitle, DialogContent } from '@mui/material';
+import { Card, CardContent, Typography, Button, Box, Dialog, DialogTitle, DialogContent, Checkbox } from '@mui/material';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { useToggleTodoCompleted } from '../hooks/useTodosQuery';
 
 interface TodoItemProps {
   todo: Todo;
@@ -14,6 +15,7 @@ interface TodoItemProps {
 
 function TodoItem({ todo, onDelete, onEdit }: TodoItemProps) {
   const [isEditing, setIsEditing] = useState(false);
+  const toggleCompletedMutation = useToggleTodoCompleted();
 
   const handleEdit = useCallback(
     (updatedTodo: Omit<Todo, 'id'>) => {
@@ -22,6 +24,10 @@ function TodoItem({ todo, onDelete, onEdit }: TodoItemProps) {
     },
     [onEdit, todo.id]
   );
+
+  const handleToggleCompleted = useCallback(() => {
+    toggleCompletedMutation.mutate(todo.id);
+  }, [toggleCompletedMutation, todo.id]);
 
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: todo.id });
 
@@ -50,15 +56,36 @@ function TodoItem({ todo, onDelete, onEdit }: TodoItemProps) {
         </Box>
         <Box flex={1}>
           <CardContent>
-            <Typography variant="h6" component="h3">
-              {todo.title}
-            </Typography>
+            <Box display="flex" alignItems="center" gap={1}>
+              <Checkbox
+                checked={todo.completed}
+                onChange={handleToggleCompleted}
+                color="primary"
+              />
+              <Typography
+                variant="h6"
+                component="h3"
+                sx={{
+                  textDecoration: todo.completed ? 'line-through' : 'none',
+                  color: todo.completed ? 'text.secondary' : 'text.primary',
+                }}
+              >
+                {todo.title}
+              </Typography>
+            </Box>
             {todo.description && (
-              <Typography variant="body2" color="text.secondary">
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{
+                  textDecoration: todo.completed ? 'line-through' : 'none',
+                  ml: 5,
+                }}
+              >
                 {todo.description}
               </Typography>
             )}
-            <Typography variant="caption" color="text.secondary">
+            <Typography variant="caption" color="text.secondary" sx={{ ml: 5 }}>
               ID: {todo.id}
             </Typography>
           </CardContent>
