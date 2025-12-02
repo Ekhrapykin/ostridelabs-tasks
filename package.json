@@ -5,13 +5,13 @@
     "packages/*"
   ],
   "scripts": {
-    "dev:frontend": "npm run dev --workspace=packages/frontend",
-    "build:frontend": "npm run build --workspace=packages/frontend",
-    "dev:backend": "npm run dev --workspace=packages/backend",
-    "build:backend": "npm run build --workspace=packages/backend",
-    "db:up": "docker-compose -f packages/backend/docker-compose.yml up -d",
-    "db:down": "docker-compose -f packages/backend/docker-compose.yml  down -v",
-    "db:restart": "npm run db:down && npm run db:up",
-    "db:logs": "docker-compose -f packages/backend/docker-compose.yml logs -f postgres"
+    "frontend:dev": "npm run dev --workspace=packages/frontend",
+    "frontend:build": "npm run build --workspace=packages/frontend",
+    "backend:dev": "npm run dev --workspace=packages/backend",
+    "backend:build": "npm run build --workspace=packages/backend",
+    "backend:migrate:latest": "npm run migrate:latest --workspace=packages/backend",
+    "backend:db:up": "npm run db:up --workspace=packages/backend",
+    "backend:db:down": "npm run db:down --workspace=packages/backend",
+    "backend:db:restart": "npm run db:restart --workspace=packages/backend"
   }
 }
