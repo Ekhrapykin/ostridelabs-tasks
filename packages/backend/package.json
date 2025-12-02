@@ -10,7 +10,11 @@
     "start": "node dist/index.js",
     "migrate:latest": "knex --knexfile src/knexfile.ts migrate:latest",
     "migrate:up": "knex --knexfile src/knexfile.ts migrate:up",
-    "migrate:down": "knex --knexfile src/knexfile.ts migrate:rollback"
+    "migrate:down": "knex --knexfile src/knexfile.ts migrate:rollback",
+    "db:up": "docker-compose up -d",
+    "db:down": "docker-compose down -v",
+    "db:logs": "docker-compose logs -f",
+    "db:restart": "npm run db:down && npm run db:up"
   },
   "keywords": [],
   "author": "",

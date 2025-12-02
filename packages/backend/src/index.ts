@@ -1,4 +1,4 @@
-import express, { NextFunction, Request, Response } from 'express';
+import express, { Request, Response } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import router from './router';
@@ -17,7 +17,7 @@ app.get('/', (_req: Request, res: Response) => {
 
 app.use('/api/todos', router);
 
-app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
+app.use((err: Error, _req: Request, res: Response) => {
   console.error(err.stack);
   res.status(500).json({ error: 'Something went wrong!' });
 });
