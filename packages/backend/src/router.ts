@@ -15,9 +15,8 @@ interface TodoRow {
   updated_at: string;
 }
 
-const router = Router();
-
-router.get('/', async (_req: Request, res: Response<TodoRow[]>) => {
+const router = Router()
+  .get('/', async (_req: Request, res: Response<TodoRow[]>) => {
   try {
     const rows = await knex<TodoRow>('todos').orderBy('created_at', 'desc');
     res.json(rows);
@@ -25,9 +24,8 @@ router.get('/', async (_req: Request, res: Response<TodoRow[]>) => {
     console.error('Error fetching todos:', error);
     res.status(500).json([]);
   }
-});
-
-router.get('/:id', async (req: Request<{ id: string }>, res: Response<TodoRow | { error: string }>) => {
+})
+  .get('/:id', async (req: Request<{ id: string }>, res: Response<TodoRow | { error: string }>) => {
   try {
     const { id } = req.params;
     const [todo] = await knex<TodoRow>('todos').where('id', id);
@@ -41,9 +39,8 @@ router.get('/:id', async (req: Request<{ id: string }>, res: Response<TodoRow | 
     console.error('Error fetching todo:', error);
     return res.status(500).json({ error: 'Failed to fetch todo' });
   }
-});
-
-router.post('/', async (req: Request<Record<string, never>, TodoRow, TodoPayload>, res: Response<TodoRow | { error: string }>) => {
+})
+  .post('/', async (req: Request<Record<string, never>, TodoRow, TodoPayload>, res: Response<TodoRow | { error: string }>) => {
   try {
     const { id, title, description } = req.body;
 
@@ -60,9 +57,8 @@ router.post('/', async (req: Request<Record<string, never>, TodoRow, TodoPayload
     console.error('Error creating todo:', error);
     return res.status(500).json({ error: 'Failed to create todo' });
   }
-});
-
-router.put('/:id', async (req: Request<{ id: string }, TodoRow, TodoPayload>, res: Response<TodoRow | { error: string }>) => {
+})
+  .put('/:id', async (req: Request<{ id: string }, TodoRow, TodoPayload>, res: Response<TodoRow | { error: string }>) => {
   try {
     const { id } = req.params;
     const { title, description } = req.body;
@@ -85,9 +81,8 @@ router.put('/:id', async (req: Request<{ id: string }, TodoRow, TodoPayload>, re
     console.error('Error updating todo:', error);
     return res.status(500).json({ error: 'Failed to update todo' });
   }
-});
-
-router.delete('/:id', async (req: Request<{ id: string }>, res: Response<{ message: string } | { error: string }>) => {
+})
+  .delete('/:id', async (req: Request<{ id: string }>, res: Response<{ message: string } | { error: string }>) => {
   try {
     const { id } = req.params;
     const [deleted] = await knex<TodoRow>('todos').where('id', id).del().returning('*');
