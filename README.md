@@ -1,73 +1,99 @@
-# React + TypeScript + Vite
+# OstrideLabs Tasks — Monorepo
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This repository contains a full-stack ToDo application built with a Vite + React + TypeScript frontend and a Node.js + Express backend using PostgreSQL.
 
-Currently, two official plugins are available:
+Quick links
+- Frontend README: packages/frontend/README.md
+- Backend README: packages/backend/README.md
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Summary
+-------
+- Frontend: Vite + React + TypeScript, Material UI, TanStack Query, @dnd-kit for drag-and-drop.
+- Backend: Node.js + Express, PostgreSQL, Knex migrations.
+- Database: PostgreSQL running in Docker (docker-compose).
+- Monorepo: npm workspaces (packages/*).
 
-## React Compiler
+Prerequisites
+-------------
+- Node.js (>=20)
+- Docker & Docker Compose (for PostgreSQL)
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+Install
+-------
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Scripts
+----------------------
+These scripts call into package workspaces for convenience (see `package.json` at repo root):
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+- `npm run frontend:dev` — Start the frontend dev server (Vite)
+- `npm run frontend:build` — Build the frontend for production
+- `npm run backend:dev` — Start the backend dev server (nodemon/tsx)
+- `npm run backend:build` — Build the backend
+- `npm run backend:migrate:latest` — Run backend migrations
+- `npm run backend:db:up` — Start PostgreSQL (docker-compose)
+- `npm run backend:db:down` — Stop PostgreSQL and remove volumes
+- `npm run backend:db:restart` — Restart PostgreSQL
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+Quickstart (development)
+------------------------
+1. Install dependencies:
+
+```bash
+npm install
 ```
+
+2. Start the database:
+
+```bash
+npm run backend:db:up
+```
+
+_Wait for the container to be ready._
+
+3. Run database migrations (backend package):
+
+```bash
+npm run backend:migrate:latest
+```
+
+4. Start the backend (new terminal):
+
+```bash
+npm run backend:dev
+```
+
+Default: http://localhost:3001
+
+5. Start the frontend (another terminal):
+
+```bash
+npm run frontend:dev
+```
+
+Default: http://localhost:5173
+
+6. Open your browser at http://localhost:5173
+
+## Architecture Overview
+
+```
+Browser (http://localhost:5173)
+    ↓
+React Frontend (Vite)
+    ↓
+React Query (Caching)
+    ↓
+REST API (http://localhost:3001)
+    ↓
+Express Backend (Node.js)
+    ↓
+PostgreSQL Database (Docker, port 5432)
+```
+
+Next steps
+-------------------------
+- To add features, start from `packages/frontend/src` (UI/components/hooks) or `packages/backend/src` (routes, db).
+- Suggested improvements: persist drag-and-drop ordering, add authentication, server-side pagination, unit/integration tests, and CI.
