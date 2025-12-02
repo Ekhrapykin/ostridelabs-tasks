@@ -2,6 +2,8 @@ import { useState, useCallback } from 'react';
 import type { Todo } from '../types/Todo';
 import TodoForm from './TodoForm';
 import { Card, CardContent, Typography, Button, Box, Dialog, DialogTitle, DialogContent } from '@mui/material';
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
 interface TodoItemProps {
   todo: Todo;
@@ -20,8 +22,15 @@ function TodoItem({ todo, onDelete, onEdit }: TodoItemProps) {
     [onEdit, todo.id]
   );
 
+  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: todo.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
   return (
-    <Card sx={{ mb: 1 }}>
+    <Card ref={setNodeRef} style={style} sx={{ mb: 1, cursor: 'grab' }} {...attributes} {...listeners}>
       <CardContent>
         <Typography variant="h6" component="h3">
           {todo.title}
