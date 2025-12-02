@@ -8,7 +8,10 @@
     "dev:frontend": "npm run dev --workspace=packages/frontend",
     "build:frontend": "npm run build --workspace=packages/frontend",
     "dev:backend": "npm run dev --workspace=packages/backend",
-    "build:backend": "npm run build --workspace=packages/backend"
+    "build:backend": "npm run build --workspace=packages/backend",
+    "db:up": "docker-compose up -d",
+    "db:down": "docker-compose down -v",
+    "db:restart": "docker-compose down -v && docker-compose up -d",
+    "db:logs": "docker-compose logs -f postgres"
   }
 }
-
