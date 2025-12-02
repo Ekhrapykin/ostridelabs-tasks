@@ -69,7 +69,7 @@ const router = Router()
 
     const [updated] = await knex<TodoRow>('todos')
       .where('id', id)
-      .update({ title, description: description ?? '', updated_at: knex.fn.now().toString() })
+      .update({ title, description: description ?? '', updated_at: knex.fn.now() })
       .returning('*');
 
     if (!updated) {
