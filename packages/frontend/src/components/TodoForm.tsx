@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+ import { useState, useCallback } from 'react';
 import type { Todo } from '../types/Todo';
 import * as React from "react";
 import { TextField, Button, Box } from '@mui/material';
@@ -14,19 +14,6 @@ function TodoForm({ onSubmit, initialData, onCancel, isEditing = false }: TodoFo
   const [title, setTitle] = useState(initialData?.title || '');
   const [description, setDescription] = useState(initialData?.description || '');
 
-  const isInitialRender = useRef(true);
-
-  useEffect(() => {
-    if (isInitialRender.current) {
-      isInitialRender.current = false;
-      return;
-    }
-    if (initialData) {
-      setTitle(initialData.title);
-      setDescription(initialData.description);
-    }
-  }, [initialData]);
-
   const handleSubmit = useCallback((e: React.FormEvent) => {
     e.preventDefault();
     if (title.trim()) {
@@ -35,10 +22,12 @@ function TodoForm({ onSubmit, initialData, onCancel, isEditing = false }: TodoFo
         description: description.trim(),
         completed: initialData?.completed ?? false
       });
-      setTitle('');
-      setDescription('');
+      if (!isEditing) {
+        setTitle('');
+        setDescription('');
+      }
     }
-  }, [title, description, onSubmit, initialData?.completed]);
+  }, [title, description, onSubmit, initialData?.completed, isEditing]);
 
   return (
     <Box component="form" onSubmit={handleSubmit} sx={{ p: 2, borderRadius: 1 }}>

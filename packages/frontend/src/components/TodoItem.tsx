@@ -112,6 +112,7 @@ function TodoItem({ todo, onDelete, onEdit }: TodoItemProps) {
         <DialogTitle>Edit Todo</DialogTitle>
         <DialogContent>
           <TodoForm
+            key={todo.id}
             onSubmit={handleEdit}
             initialData={todo}
             onCancel={() => setIsEditing(false)}

@@ -1,78 +1,18 @@
-import { useState, useCallback, useMemo, useEffect } from 'react';
+import { useState } from 'react';
 import TodoForm from './components/TodoForm';
 import TodoList from './components/TodoList';
-import type { Todo } from './types/Todo';
-import { v4 as uuidv4 } from 'uuid';
-import _ from 'lodash';
 import { Container, Typography, Button, Dialog, DialogTitle, DialogContent, CircularProgress, Alert } from '@mui/material';
-import { arrayMove } from '@dnd-kit/sortable';
-import { useTodos, useCreateTodo, useUpdateTodo, useDeleteTodo } from './hooks/useTodosQuery';
+import { useTodoOperations } from './hooks/useTodoOperations';
 
 function App() {
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [localTodos, setLocalTodos] = useState<Todo[]>([]);
 
-  // React Query hooks
-  const { data: serverTodos, isLoading, error } = useTodos();
-  const createTodoMutation = useCreateTodo();
-  const updateTodoMutation = useUpdateTodo();
-  const deleteTodoMutation = useDeleteTodo();
+  const { todos, isLoading, error, addTodo, deleteTodo, editTodo, reorderTodo } = useTodoOperations();
 
-  useEffect(() => {
-    if (!serverTodos) {
-      return;
-    }
-
-    setLocalTodos((currentTodos) => {
-      const serverById = new Map(serverTodos.map((todo) => [todo.id, todo]));
-      const orderedTodos = currentTodos
-        .map((todo) => serverById.get(todo.id))
-        .filter((todo): todo is Todo => Boolean(todo));
-      const orderedIds = new Set(orderedTodos.map((todo) => todo.id));
-      const newTodos = serverTodos.filter((todo) => !orderedIds.has(todo.id));
-
-      return [...orderedTodos, ...newTodos];
-    });
-  }, [serverTodos]);
-
-  const todos = useMemo(() => {
-    return localTodos.length > 0 ? localTodos : serverTodos || [];
-  }, [serverTodos, localTodos]);
-
-  const addTodo = useCallback((newTodo: Omit<Todo, 'id'>) => {
-    const todo: Todo = {
-      ...newTodo,
-      id: uuidv4(),
-    };
-    createTodoMutation.mutate(todo, {
-      onSuccess: () => {
-        setDialogOpen(false);
-      },
-    });
-  }, [createTodoMutation]);
-
-  const deleteTodo = useCallback((id: string) => {
-    deleteTodoMutation.mutate(id, {
-      onSuccess: () => {
-      },
-    });
-  }, [deleteTodoMutation]);
-
-  const editTodo = useCallback((updatedTodo: Todo) => {
-    updateTodoMutation.mutate(updatedTodo, {
-      onSuccess: () => {
-      },
-    });
-  }, [updateTodoMutation]);
-
-  const reorderTodo = useCallback((activeId: string, overId: string) => {
-    setLocalTodos((currentTodos) => {
-      const todosToReorder = currentTodos.length > 0 ? currentTodos : (serverTodos || []);
-      const oldIndex = _.findIndex(todosToReorder, (todo) => todo.id === activeId);
-      const newIndex = _.findIndex(todosToReorder, (todo) => todo.id === overId);
-      return arrayMove(todosToReorder, oldIndex, newIndex);
-    });
-  }, [serverTodos]);
+  const handleAddTodo = async (newTodo: Parameters<typeof addTodo>[0]) => {
+    await addTodo(newTodo);
+    setDialogOpen(false);
+  };
 
   if (isLoading) {
     return (
@@ -104,7 +44,7 @@ function App() {
       <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
         <DialogTitle>Add Todo</DialogTitle>
         <DialogContent>
-          <TodoForm onSubmit={addTodo} />
+          <TodoForm onSubmit={handleAddTodo} onCancel={() => setDialogOpen(false)} />
         </DialogContent>
       </Dialog>
     </Container>
